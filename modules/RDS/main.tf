@@ -17,7 +17,7 @@ resource "aws_db_instance" "edx_rds" {
   skip_final_snapshot  = true
   vpc_security_group_ids = [var.rds_sg_id]
 
-  enabled_cloudwatch_logs_exports = ["error", "general", "slowquery"]
+  enabled_cloudwatch_logs_exports = ["general", "slowquery", "audit"]
 
   tags = merge(var.tags, {
     created-date = "2024-05-29"

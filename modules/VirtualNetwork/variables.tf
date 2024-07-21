@@ -2,15 +2,15 @@ variable "virtual_network_address_space" {
   type = string
 }
 
-variable "main_subnet_application_address_prefixes" {
+variable "subnet_public_address_prefixes_1" {
   type = string
 }
 
-variable "subnet_data_address_1_prefixes" {
+variable "subnet_public_address_prefixes_2" {
   type = string
 }
 
-variable "subnet_data_address_2_prefixes" {
+variable "subnet_public_address_prefixes_3" {
   type = string
 }
 
@@ -19,5 +19,9 @@ variable "default_tags" {
 }
 
 variable "stage_name" {
+  type = string
+}
+
+variable "region" {
   type = string
 }

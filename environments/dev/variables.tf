@@ -30,3 +30,16 @@ variable "stage_name" {
   type    = string
   default = "dev"
 }
+
+variable "SMTP_HOST" {
+  type = string
+}
+
+variable "SMTP_USERNAME" {
+  type = string
+}
+
+
+variable "SMTP_PASSWORD" {
+  type = string
+}

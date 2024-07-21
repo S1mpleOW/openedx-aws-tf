@@ -8,79 +8,46 @@ resource "aws_vpc" "main" {
 }
 
 # Subnets
-resource "aws_subnet" "application-main" {
+resource "aws_subnet" "public_1" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.main_subnet_application_address_prefixes
+  cidr_block = var.subnet_public_address_prefixes_1
+  availability_zone = format("%s%s", var.region, "a")
 
   tags = merge(var.default_tags, {
     created-date = "2024-05-30"
-    Name = format("subnet-application-%s", var.stage_name)
+    Name = format("subnet-public-%s-1", var.stage_name)
   })
 }
 
-resource "aws_subnet" "database-main-1" {
+resource "aws_subnet" "public_2" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet_data_address_1_prefixes
+  cidr_block = var.subnet_public_address_prefixes_2
+  availability_zone = format("%s%s", var.region, "b")
 
   tags = merge(var.default_tags, {
     created-date = "2024-05-30"
-    Name = format("subnet-database-1-%s", var.stage_name)
+    Name = format("subnet-public-%s-2", var.stage_name)
   })
 }
 
-resource "aws_subnet" "database-main-2" {
+resource "aws_subnet" "public_3" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet_data_address_2_prefixes
+  cidr_block = var.subnet_public_address_prefixes_3
+  availability_zone = format("%s%s", var.region, "c")
 
   tags = merge(var.default_tags, {
     created-date = "2024-05-30"
-    Name = format("subnet-database-2-%s", var.stage_name)
+    Name = format("subnet-public-%s-3", var.stage_name)
   })
 }
 
 # Internet Gateway
-resource "aws_internet_gateway" "main-igw" {
+resource "aws_internet_gateway" "main_igw" {
   vpc_id = aws_vpc.main.id
 
   tags = merge(var.default_tags, {
+    Name         = format("igw-main-%s", var.stage_name)
     created-date = "2024-05-30"
-  })
-}
-
-# Nat Gateway
-resource "aws_eip" "database-eip-1" {
-  domain = "vpc"
-  tags = merge(var.default_tags, {
-    created-date : "2024-05-30"
-    Name : format("eip-database-1-%s", var.stage_name)
-  })
-}
-
-resource "aws_nat_gateway" "database-natgw-1" {
-  subnet_id         = aws_subnet.database-main-1.id
-  allocation_id     = aws_eip.database-eip-1.id
-  connectivity_type = "public"
-  tags = merge(var.default_tags, {
-    created-date : "2024-05-30"
-    Name : format("nat-database-1-%s", var.stage_name)
-  })
-}
-
-resource "aws_eip" "database-eip-2" {
-  domain = "vpc"
-  tags = merge(var.default_tags, {
-    created-date : "2024-05-30"
-    Name : format("eip-database-2-%s", var.stage_name)
-  })
-}
-
-resource "aws_nat_gateway" "database-natgw-2" {
-  subnet_id         = aws_subnet.database-main-2.id
-  allocation_id     = aws_eip.database-eip-2.id
-  connectivity_type = "public"
-  tags = merge(var.default_tags, {
-    created-date : "2024-05-30"
-    Name : format("nat-database-2-%s", var.stage_name)
   })
 }
 
@@ -91,7 +58,7 @@ resource "aws_route_table" "public" {
   // redirects all outbound traffic through an internet gw
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main-igw.id
+    gateway_id = aws_internet_gateway.main_igw.id
   }
 
   tags = merge(var.default_tags, {
@@ -99,42 +66,18 @@ resource "aws_route_table" "public" {
   })
 }
 
-resource "aws_route_table" "private-1" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.database-natgw-1.id
-  }
-  tags = merge(var.default_tags, {
-    created-date : "2024-05-30"
-    Name : format("rt-database-%s-nat-1", var.stage_name)
-  })
-}
-
-resource "aws_route_table" "private-2" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.database-natgw-2.id
-  }
-  tags = merge(var.default_tags, {
-    created-date : "2024-05-30"
-    Name : format("rt-database-%s-nat-2", var.stage_name)
-  })
-}
-
 # Route Table Association
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.application-main.id
+resource "aws_route_table_association" "public_1" {
+  subnet_id      = aws_subnet.public_1.id
   route_table_id = aws_route_table.public.id
 }
 
-resource "aws_route_table_association" "private-1" {
-  subnet_id      = aws_subnet.database-main-1.id
-  route_table_id = aws_route_table.private-1.id
+resource "aws_route_table_association" "public_2" {
+  subnet_id      = aws_subnet.public_2.id
+  route_table_id = aws_route_table.public.id
 }
 
-resource "aws_route_table_association" "private-2" {
-  subnet_id      = aws_subnet.database-main-2.id
-  route_table_id = aws_route_table.private-2.id
+resource "aws_route_table_association" "public_3" {
+  subnet_id      = aws_subnet.public_3.id
+  route_table_id = aws_route_table.public.id
 }

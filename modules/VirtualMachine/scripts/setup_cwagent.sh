@@ -1,11 +1,14 @@
 #!/bin/bash
-
 # Download and install the CloudWatch agent
 wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i amazon-cloudwatch-agent.deb
 
+# Change ownership of the CloudWatch agent configuration directory to the current user
+sudo chown $(whoami):$(whoami) /opt/aws/amazon-cloudwatch-agent/etc
+
 # Create the CloudWatch agent configuration file
-cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+
+sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json > /dev/null <<EOF
 {
   "agent": {
     "metrics_collection_interval": 60,
@@ -28,4 +31,4 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 EOF
 
 # Start the CloudWatch agent
-sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a start
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a start
