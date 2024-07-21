@@ -131,6 +131,15 @@ resource "aws_security_group_rule" "elasticsearch_sg_allow_https" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group_rule" "elasticsearch_sg_allow_http" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  security_group_id = aws_security_group.elasticsearch_sg.id
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "elasticsearch_sg_egress_all" {
   type              = "egress"
   from_port         = 0
