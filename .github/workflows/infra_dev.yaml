@@ -36,6 +36,9 @@ jobs:
         run: |
           cd ./environments/dev/
           echo "mysql_password = \"${DATABASE_PASSWORD}\"" >> terraform.tfvars
+          echo "SMTP_HOST = \"${SMTP_HOST}\"" >> terraform.tfvars
+          echo "SMTP_USERNAME = \"${SMTP_USERNAME}\"" >> terraform.tfvars
+          echo "SMTP_PASSWORD = \"${SMTP_PASSWORD}\"" >> terraform.tfvars
           terraform init
 
       - name: Plan Infrastructure
