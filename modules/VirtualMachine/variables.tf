@@ -86,3 +86,7 @@ variable "S3_STORAGE_BUCKET" {
 variable "S3_PROFILE_IMAGE_BUCKET" {
   type = string
 }
+
+variable "ELASTICSEARCH_HOST" {
+  type = string
+}

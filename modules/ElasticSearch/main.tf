@@ -2,13 +2,17 @@ resource "aws_elasticsearch_domain" "fastai_es" {
   domain_name           = var.domain
   elasticsearch_version  = "7.10"
   cluster_config {
-    instance_type = "t3.small.search"
+    instance_type = "t3.small.elasticsearch"
     instance_count = 1
   }
   ebs_options {
     ebs_enabled = true
     volume_size = 30
     volume_type = "gp3"
+  }
+
+  domain_endpoint_options {
+    enforce_https = true
   }
 
   vpc_options {
@@ -32,7 +36,9 @@ resource "aws_elasticsearch_domain_policy" "fastai_es_policy" {
       "Statement": [
           {
               "Action": "es:*",
-              "Principal": "*",
+              "Principal": {
+                "AWS": "*"
+              },
               "Effect": "Allow",
               "Resource": "${aws_elasticsearch_domain.fastai_es.arn}/*"
           }

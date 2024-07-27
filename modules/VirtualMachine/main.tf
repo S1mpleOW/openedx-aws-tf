@@ -19,6 +19,7 @@ data "template_file" "user_data" {
     S3_REGION          = "${var.S3_REGION}"
     S3_STORAGE_BUCKET  = "${var.S3_STORAGE_BUCKET}"
     S3_PROFILE_IMAGE_BUCKET = "${var.S3_PROFILE_IMAGE_BUCKET}"
+    ELASTICSEARCH_HOST = "${var.ELASTICSEARCH_HOST}"
   }
 }
 
@@ -31,7 +32,7 @@ resource "aws_instance" "openedx_instance" {
   depends_on = [ aws_iam_instance_profile.cloudwatch_agent_instance_profile, aws_instance.mongodb_instance]
 
   root_block_device {
-    volume_size = 25
+    volume_size = 30
     volume_type = "gp2"
   }
 
@@ -44,6 +45,11 @@ resource "aws_instance" "openedx_instance" {
     created_date: "2024-05-29"
     Name         : format("openedx_instance-%s", var.stage_name)
   })
+}
+
+resource "aws_eip" "openedx_instance" {
+  instance = aws_instance.openedx_instance.id
+  domain   = "vpc"
 }
 
 resource "aws_instance" "mongodb_instance" {

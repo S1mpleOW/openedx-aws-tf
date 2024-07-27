@@ -4,6 +4,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   tags = merge(var.default_tags, {
     created-date = "2024-05-30"
+    Name = format("OpenEdx-vpc-%s", var.stage_name)
   })
 }
 

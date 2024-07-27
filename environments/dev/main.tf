@@ -61,13 +61,13 @@ module "RDS" {
 module "KeyPair" {
   source = "../../modules/KeyPair"
 
-  key_name = "OpenedX_key"
+  key_name = "OpenedX-key"
 }
 
 module "CWLogs" {
   source = "../../modules/CloudWatchLogs"
 
-  ec2_log_group_name    = "/aws/edx/edx-application"
+  ec2_log_group_name    = "/aws/edx/application"
   log_retention_in_days = 3
 }
 
@@ -78,6 +78,15 @@ module "IAM" {
   stage_name        = var.stage_name
 }
 
+module "ElasticSearch" {
+  source = "../../modules/ElasticSearch"
+  domain = "fastai-es-${var.stage_name}"
+  stage_name   = var.stage_name
+  default_tags = var.default_tags
+  subnet_id    = module.VPC.public_subnet_id_1
+  es_sg_id     = module.SecurityGroups.elasticsearch_sg_id
+}
+
 module "EC2" {
   source                                 = "../../modules/VirtualMachine"
   subnet_id_application                  = module.VPC.public_subnet_id_1
@@ -85,7 +94,7 @@ module "EC2" {
   edx_sg_id                              = module.SecurityGroups.edx_sg_id
   mongodb_sg_id                          = module.SecurityGroups.mongodb_sg_id
   default_tags                           = var.default_tags
-  openedx_ami                            = "ami-0c37aff3afbd5e16e"
+  openedx_ami                            = "ami-03eb72bb85a8e35c8"
   mongodb_ami                            = "ami-0d73fbec275a3e034"
   key_name                               = module.KeyPair.key_name
   stage_name                             = var.stage_name
@@ -97,6 +106,7 @@ module "EC2" {
   SMTP_HOST                              = var.SMTP_HOST
   SMTP_USERNAME                          = var.SMTP_USERNAME
   SMTP_PASSWORD                          = var.SMTP_PASSWORD
+  ELASTICSEARCH_HOST                     = module.ElasticSearch.es_domain_endpoint
   OPENEDX_AWS_SECRET_ACCESS_KEY          = module.IAM.aws_s3_secret_key
   OPENEDX_AWS_ACCESS_KEY                 = module.IAM.aws_s3_access_key
   S3_PROFILE_IMAGE_BUCKET                = module.S3.openedx_fastai_profile_images_bucket_name
@@ -128,6 +138,10 @@ output "endpoint_redis_edx" {
 
 output "endpoint_mysql_edx" {
   value = module.RDS.endpoint_mysql_edx
+}
+
+output "endpoint_es_edx" {
+  value = module.ElasticSearch.es_domain_endpoint
 }
 
 output "edx_public_ip" {
