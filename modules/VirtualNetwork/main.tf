@@ -31,14 +31,14 @@ resource "aws_subnet" "public_2" {
   })
 }
 
-resource "aws_subnet" "public_3" {
+resource "aws_subnet" "private_2" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.subnet_public_address_prefixes_3
-  availability_zone = format("%s%s", var.region, "c")
+  cidr_block = var.subnet_private_address_prefixes_2
+  availability_zone = format("%s%s", var.region, "b")
 
   tags = merge(var.default_tags, {
     created-date = "2024-05-30"
-    Name = format("subnet-public-%s-3", var.stage_name)
+    Name = format("subnet-private-%s-2", var.stage_name)
   })
 }
 
@@ -75,10 +75,5 @@ resource "aws_route_table_association" "public_1" {
 
 resource "aws_route_table_association" "public_2" {
   subnet_id      = aws_subnet.public_2.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "public_3" {
-  subnet_id      = aws_subnet.public_3.id
   route_table_id = aws_route_table.public.id
 }

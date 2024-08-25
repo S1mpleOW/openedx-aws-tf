@@ -5,3 +5,11 @@ variable "stage_name" {
 variable "default_tags" {
   type = map(string)
 }
+
+variable "default_cache_policy_id" {
+  type = string
+}
+
+variable "default_origin_request_id" {
+  type = string
+}

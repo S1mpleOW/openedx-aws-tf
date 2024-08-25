@@ -64,15 +64,6 @@ resource "aws_security_group_rule" "mongodb_sg_allow_mongo" {
   cidr_blocks       = [var.vpc_cidr_range]
 }
 
-resource "aws_security_group_rule" "mongodb_sg_allow_ssh" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  security_group_id = aws_security_group.mongodb_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-}
-
 resource "aws_security_group_rule" "mongodb_sg_egress_all" {
   type              = "egress"
   from_port         = 0

@@ -4,9 +4,11 @@ resource "aws_iam_instance_profile" "cloudwatch_agent_instance_profile" {
 }
 
 data "template_file" "user_data" {
-  template = file("${path.module}/scripts/setup_tutor_configuration.sh")
+  template = filebase64("${path.module}/scripts/setup_tutor_configuration.sh")
   vars = {
-    MONGODB_HOST       = "${aws_instance.mongodb_instance.private_dns}"
+    MONGODB_HOST       = "${var.MONGODB_HOST}"
+    MONGODB_USERNAME   = "${var.MONGODB_USERNAME}"
+    MONGODB_PASSWORD   = "${var.MONGODB_PASSWORD}"
     MYSQL_HOST         = "${var.MYSQL_HOST}"
     MYSQL_ROOT_USERNAME = "${var.MYSQL_ROOT_USERNAME}"
     MYSQL_ROOT_PASSWORD = "${var.MYSQL_ROOT_PASSWORD}"
@@ -29,7 +31,7 @@ resource "aws_instance" "openedx_instance" {
   key_name      = var.key_name
   associate_public_ip_address = true
   iam_instance_profile = aws_iam_instance_profile.cloudwatch_agent_instance_profile.name
-  depends_on = [ aws_iam_instance_profile.cloudwatch_agent_instance_profile, aws_instance.mongodb_instance]
+  depends_on = [ aws_iam_instance_profile.cloudwatch_agent_instance_profile]
 
   root_block_device {
     volume_size = 30
@@ -37,7 +39,7 @@ resource "aws_instance" "openedx_instance" {
   }
 
   subnet_id = var.subnet_id_application
-  security_groups = [var.edx_sg_id]
+  vpc_security_group_ids = [var.edx_sg_id]
 
   user_data  = data.template_file.user_data.rendered
 
@@ -47,26 +49,26 @@ resource "aws_instance" "openedx_instance" {
   })
 }
 
-resource "aws_eip" "openedx_instance" {
-  instance = aws_instance.openedx_instance.id
-  domain   = "vpc"
-}
+# resource "aws_eip" "openedx_instance" {
+#   instance = aws_instance.openedx_instance.id
+#   domain   = "vpc"
+# }
 
-resource "aws_instance" "mongodb_instance" {
-  ami           = var.mongodb_ami
-  instance_type = "t2.small"
-  key_name      = var.key_name
+# resource "aws_instance" "mongodb_instance" {
+#   ami           = var.mongodb_ami
+#   instance_type = "t2.small"
+#   key_name      = var.key_name
 
-  root_block_device {
-    volume_size = 20
-    volume_type = "gp2"
-  }
+#   root_block_device {
+#     volume_size = 20
+#     volume_type = "gp2"
+#   }
 
-  subnet_id = var.subnet_id_database
-  security_groups = [var.mongodb_sg_id]
+#   subnet_id = var.subnet_id_database
+#   vpc_security_group_ids = [var.mongodb_sg_id]
 
-  tags = merge(var.default_tags, {
-    created_date: "2024-05-29"
-    Name         : format("mongodb_instance-%s", var.stage_name)
-  })
-}
+#   tags = merge(var.default_tags, {
+#     created_date: "2024-05-29"
+#     Name         : format("mongodb_instance-%s", var.stage_name)
+#   })
+# }

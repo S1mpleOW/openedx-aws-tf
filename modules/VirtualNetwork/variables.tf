@@ -10,7 +10,7 @@ variable "subnet_public_address_prefixes_2" {
   type = string
 }
 
-variable "subnet_public_address_prefixes_3" {
+variable "subnet_private_address_prefixes_2" {
   type = string
 }
 

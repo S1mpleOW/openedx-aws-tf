@@ -22,8 +22,6 @@ resource "aws_cloudfront_distribution" "openedx_lms" {
     cached_methods           = ["GET", "HEAD"]
     target_origin_id         = local.s3_origin_lms_id
     viewer_protocol_policy   = "redirect-to-https"
-    cache_policy_id          = "4a439cde-6ee0-4329-9889-e53b41d94a00"
-    origin_request_policy_id = "ab0478ac-7ee4-4735-b88b-02772a34a5bd"
     compress                 = true
   }
   price_class = "PriceClass_200"

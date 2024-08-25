@@ -26,10 +26,6 @@ variable "subnet_id_database" {
   type = string
 }
 
-variable "mongodb_ami" {
-  type = string
-}
-
 variable "stage_name" {
   type = string
 }
@@ -88,5 +84,17 @@ variable "S3_PROFILE_IMAGE_BUCKET" {
 }
 
 variable "ELASTICSEARCH_HOST" {
+  type = string
+}
+
+variable "MONGODB_HOST" {
+  type = string
+}
+
+variable "MONGODB_USERNAME" {
+  type = string
+}
+
+variable "MONGODB_PASSWORD" {
   type = string
 }

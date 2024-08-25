@@ -1,8 +1,13 @@
 #!/bin/bash
 
 source ~/.venvs/tutor/bin/activate
+
+# Get the environment variables
+touch test.txt
+echo "MONGODB_HOST: ${MONGODB_HOST}" >> test.txt
+
 # Configure the tutor environment
-tutor config save --set RUN_MONGODB=false --set MONGODB_HOST=${MONGODB_HOST}
+tutor config save --set RUN_MONGODB=false --set MONGODB_HOST=${MONGODB_HOST} --set MONGODB_USERNAME=${MONGODB_USERNAME} --set MONGODB_PASSWORD=${MONGODB_PASSWORD}
 tutor config save --set RUN_MYSQL=false --set MYSQL_HOST=${MYSQL_HOST} --set MYSQL_ROOT_USERNAME=${MYSQL_ROOT_USERNAME} --set MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 tutor config save --set RUN_REDIS=false --set REDIS_HOST=${REDIS_HOST}
 tutor config save --set RUN_SMTP=false --set SMTP_HOST=${SMTP_HOST} --set SMTP_PORT=587 --set SMTP_USERNAME=${SMTP_USERNAME} --set SMTP_PASSWORD=${SMTP_PASSWORD} --set SMTP_USE_TLS=true

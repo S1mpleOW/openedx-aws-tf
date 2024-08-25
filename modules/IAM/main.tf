@@ -57,3 +57,8 @@ resource "aws_iam_policy" "openedx_s3_user_policy" {
   description = "Policy for openedx-s3-user"
   policy      = data.aws_iam_policy_document.openedx_s3_user_policy_document.json
 }
+
+resource "aws_iam_user_policy_attachment" "openedx_s3_user_policy_attachment" {
+  user       = aws_iam_user.openedx_s3_user.name
+  policy_arn = aws_iam_policy.openedx_s3_user_policy.arn
+}

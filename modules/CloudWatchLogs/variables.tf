@@ -8,3 +8,12 @@ variable "log_retention_in_days" {
   type        = number
   default     = 30
 }
+
+variable "sns_topic_arn" {
+  type = string
+  description = "value of the SNS topic ARN"
+}
+
+variable "ec2_instance_id" {
+  type = string
+}
