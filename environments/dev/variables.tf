@@ -44,7 +44,7 @@ variable "SMTP_PASSWORD" {
   type = string
 }
 
-variable "doc_db_password" {
-  description = "The password for the DocumentDB cluster"
-  type        = string
-}
+# variable "doc_db_password" {
+#   description = "The password for the DocumentDB cluster"
+#   type        = string
+# }
