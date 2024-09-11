@@ -98,3 +98,7 @@ variable "MONGODB_USERNAME" {
 variable "MONGODB_PASSWORD" {
   type = string
 }
+
+variable "mongodb_ami" {
+  type = string
+}

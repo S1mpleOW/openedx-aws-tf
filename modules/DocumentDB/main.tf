@@ -11,7 +11,7 @@ resource "aws_docdb_cluster" "openedx_cluster" {
   db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.openedx_docdb_cluster_pg.name
   vpc_security_group_ids = var.vpc_sg_ids
   skip_final_snapshot             = true
-  kms_key_id = data.aws_kms_alias.rds.arn
+  kms_key_id = data.aws_kms_alias.rds.target_key_arn
   storage_encrypted = true
   tags = merge(
     var.tags,

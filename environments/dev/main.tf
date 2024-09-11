@@ -14,21 +14,21 @@ terraform {
     }
   }
   backend "s3" {
-    bucket  = "tf-s3-be"
-    key     = "terraform/development"
-    region  = "ap-southeast-1"
+    bucket = "tf-s3-be"
+    key    = "terraform/development"
+    region = "ap-southeast-1"
   }
 }
 module "VPC" {
   source = "../../modules/VirtualNetwork"
 
-  virtual_network_address_space    = "10.0.0.0/16"
-  subnet_public_address_prefixes_1 = "10.0.0.0/24"
-  subnet_public_address_prefixes_2 = "10.0.1.0/24"
+  virtual_network_address_space     = "10.0.0.0/16"
+  subnet_public_address_prefixes_1  = "10.0.0.0/24"
+  subnet_public_address_prefixes_2  = "10.0.1.0/24"
   subnet_private_address_prefixes_2 = "10.0.2.0/24"
-  default_tags                     = var.default_tags
-  stage_name                       = var.stage_name
-  region                           = var.region
+  default_tags                      = var.default_tags
+  stage_name                        = var.stage_name
+  region                            = var.region
 }
 
 module "SecurityGroups" {
@@ -58,19 +58,19 @@ module "RDS" {
   rds_sg_id      = module.SecurityGroups.rds_sg_id
 }
 
-module "DocumentDB" {
-  source = "../../modules/DocumentDB"
+# module "DocumentDB" {
+#   source = "../../modules/DocumentDB"
 
-  doc_db_password     = var.doc_db_password
-  availability_zones  = ["${var.region}a", "${var.region}b"]
-  tags                = var.default_tags
-  subnet_ids          = [
-    module.VPC.public_subnet_id_1,
-    module.VPC.public_subnet_id_2,
-  ]
-  stage               = var.stage_name
-  vpc_sg_ids = [module.SecurityGroups.mongodb_sg_id]
-}
+#   doc_db_password    = var.doc_db_password
+#   availability_zones = ["${var.region}a", "${var.region}b", "${var.region}c"]
+#   tags               = var.default_tags
+#   subnet_ids = [
+#     module.VPC.public_subnet_id_1,
+#     module.VPC.public_subnet_id_2,
+#   ]
+#   stage      = var.stage_name
+#   vpc_sg_ids = [module.SecurityGroups.mongodb_sg_id]
+# }
 
 module "KeyPair" {
   source = "../../modules/KeyPair"
@@ -79,10 +79,10 @@ module "KeyPair" {
 }
 
 module "SNS" {
-  source = "../../modules/SNS"
-  sns_name = "OpenedXSNSSendDiscordNotification"
+  source                  = "../../modules/SNS"
+  sns_name                = "OpenedXSNSSendDiscordNotification"
   aws_lambda_function_arn = "arn:aws:lambda:ap-southeast-1:856971625808:function:SendDiscordNotification"
-  tags = var.default_tags
+  tags                    = var.default_tags
 }
 
 module "CWLogs" {
@@ -90,8 +90,8 @@ module "CWLogs" {
 
   ec2_log_group_name    = "/aws/edx/application"
   log_retention_in_days = 3
-  sns_topic_arn = module.SNS.sns_topic_arn
-  ec2_instance_id = module.EC2.edx_instance_id
+  sns_topic_arn         = module.SNS.sns_topic_arn
+  ec2_instance_id       = module.EC2.edx_instance_id
 }
 
 
@@ -103,8 +103,8 @@ module "IAM" {
 }
 
 module "ElasticSearch" {
-  source = "../../modules/ElasticSearch"
-  domain = "fastai-es-${var.stage_name}"
+  source       = "../../modules/ElasticSearch"
+  domain       = "fastai-es-${var.stage_name}"
   stage_name   = var.stage_name
   default_tags = var.default_tags
   subnet_id    = module.VPC.public_subnet_id_1
@@ -122,9 +122,12 @@ module "EC2" {
   key_name                               = module.KeyPair.key_name
   stage_name                             = var.stage_name
   aws_cloudwatch_agent_profile_role_name = module.IAM.aws_cloudwatch_agent_profile_role_name
-  MONGODB_HOST = module.DocumentDB.documentdb_endpoint
-  MONGODB_USERNAME                       = module.DocumentDB.documentdb_master_username
-  MONGODB_PASSWORD                       = module.DocumentDB.documentdb_master_password
+  # MONGODB_HOST                           = module.DocumentDB.documentdb_endpoint
+  # MONGODB_USERNAME                       = module.DocumentDB.documentdb_master_username
+  # MONGODB_PASSWORD                       = module.DocumentDB.documentdb_master_password
+  MONGODB_HOST                           = ""
+  MONGODB_USERNAME                       = ""
+  MONGODB_PASSWORD                       = ""
   MYSQL_HOST                             = ""
   MYSQL_ROOT_PASSWORD                    = ""
   MYSQL_ROOT_USERNAME                    = ""
@@ -138,6 +141,7 @@ module "EC2" {
   S3_PROFILE_IMAGE_BUCKET                = module.S3.openedx_fastai_profile_images_bucket_name
   S3_REGION                              = var.region
   S3_STORAGE_BUCKET                      = module.S3.openedx_fastai_bucket_name
+  mongodb_ami                            = "ami-0d73fbec275a3e034"
   # depends_on                             = [module.CWLogs, module.IAM, module.RDS, module.ElastiCache, module.VPC, module.SecurityGroups, module.DocumentDB, module.ElasticSearch]
 }
 
@@ -146,18 +150,6 @@ module "S3" {
   default_tags = var.default_tags
   stage_name   = var.stage_name
   iam_s3_arn   = module.IAM.iam_s3_arn
-}
-
-module "CloudFront" {
-  source = "../../modules/CloudFront"
-  default_tags = var.default_tags
-  stage_name   = var.stage_name
-  default_cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
-  default_origin_request_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
-}
-
-output "cloudfront_domain_name" {
-  value = module.CloudFront.cloudfront_domain_name
 }
 
 output "endpoint_redis_edx" {
@@ -173,7 +165,7 @@ output "endpoint_es_edx" {
 }
 
 output "mongodb_host" {
-  value = module.DocumentDB.documentdb_endpoint
+  value = module.EC2.mongodb_host
 }
 
 output "edx_public_ip" {

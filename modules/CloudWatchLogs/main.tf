@@ -4,7 +4,7 @@ resource "aws_cloudwatch_log_group" "ec2_log_group" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "increase_ec2_alarm" {
-  alarm_name                = "increase-ec2-alarm"
+  alarm_name                = "Notification_CPU_Utilization"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = 2
   metric_name               = "CPUUtilization"

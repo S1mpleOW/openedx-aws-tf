@@ -54,21 +54,21 @@ resource "aws_instance" "openedx_instance" {
 #   domain   = "vpc"
 # }
 
-# resource "aws_instance" "mongodb_instance" {
-#   ami           = var.mongodb_ami
-#   instance_type = "t2.small"
-#   key_name      = var.key_name
+resource "aws_instance" "mongodb_instance" {
+  ami           = var.mongodb_ami
+  instance_type = "t2.small"
+  key_name      = var.key_name
 
-#   root_block_device {
-#     volume_size = 20
-#     volume_type = "gp2"
-#   }
+  root_block_device {
+    volume_size = 20
+    volume_type = "gp2"
+  }
 
-#   subnet_id = var.subnet_id_database
-#   vpc_security_group_ids = [var.mongodb_sg_id]
+  subnet_id = var.subnet_id_database
+  vpc_security_group_ids = [var.mongodb_sg_id]
 
-#   tags = merge(var.default_tags, {
-#     created_date: "2024-05-29"
-#     Name         : format("mongodb_instance-%s", var.stage_name)
-#   })
-# }
+  tags = merge(var.default_tags, {
+    created_date: "2024-05-29"
+    Name         : format("mongodb_instance-%s", var.stage_name)
+  })
+}

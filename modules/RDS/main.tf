@@ -5,7 +5,7 @@ resource "aws_db_subnet_group" "edx_rds_subnet" {
 }
 
 resource "aws_db_instance" "edx_rds" {
-  allocated_storage    = 20
+  allocated_storage    = 40
   storage_type         = "gp2"
   engine               = "mysql"
   engine_version       = "8.0.35"
@@ -15,6 +15,7 @@ resource "aws_db_instance" "edx_rds" {
   password             = var.mysql_password
   db_subnet_group_name = aws_db_subnet_group.edx_rds_subnet.name
   skip_final_snapshot  = true
+  multi_az             = true
   vpc_security_group_ids = [var.rds_sg_id]
 
   enabled_cloudwatch_logs_exports = ["general", "slowquery", "audit"]
