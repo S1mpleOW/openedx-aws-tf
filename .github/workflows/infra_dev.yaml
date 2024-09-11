@@ -1,11 +1,14 @@
-name: 'Deploy Infrastructure in the Development environment'
+name: "Deploy Infrastructure in the Development environment"
 on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Terraform action [plan, apply]'
-        required: true
-        default: 'plan'
+        description: "Terraform action [plan, apply]"
+        type: choice
+        default: "plan"
+        options:
+          - plan
+          - apply
 
 jobs:
   Infrastructure:
@@ -30,7 +33,7 @@ jobs:
       - name: Init Terraform
         env:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD_DEV }}
-          SMTP_HOST: 'email-smtp.ap-southeast-1.amazonaws.com'
+          SMTP_HOST: "email-smtp.ap-southeast-1.amazonaws.com"
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME_DEV }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD_DEV }}
         run: |
